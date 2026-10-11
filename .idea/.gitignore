@@ -1,0 +1,10 @@
+# Default ignored files
+/../../EcinSub./.idea/shelf/
+/../../EcinSub./.idea/workspace.xml
+# Editor-based HTTP Client requests
+/../../EcinSub./.idea/httpRequests/
+# Ignored default folder with query files
+/../../EcinSub./.idea/queries/
+# Datasource local storage ignored files
+/../../EcinSub./.idea/dataSources/
+/../../EcinSub./.idea/dataSources.local.xml
