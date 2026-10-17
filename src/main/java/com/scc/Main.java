@@ -1,16 +1,17 @@
-
 package com.scc;
 
 import com.scc.dao.UserDao;
 import com.scc.model.User;
+import com.scc.ui.AdminMenu;
+
 import java.util.Scanner;
 
 public class Main {
 
-    public static void main(String[] args) {
+    private static Scanner sc = new Scanner(System.in);
+    private static UserDao userDao = new UserDao();
 
-        Scanner sc = new Scanner(System.in);
-        UserDao userDao = new UserDao();
+    public static void main(String[] args) {
 
         boolean running = true;
 
@@ -19,125 +20,79 @@ public class Main {
             System.out.println("\n======================================");
             System.out.println(" ECINREV: SUBDIVISION VISITOR ENTRY & EXIT MONITORING SYSTEM");
             System.out.println("======================================");
-            System.out.println("1. Register Account");
-            System.out.println("2. Login");
-            System.out.println("0. Exit");
-            System.out.print("Choose: ");
+            System.out.println("1. Login");
+            System.out.println("2. Register");
+            System.out.println("3. Exit");
+            System.out.print("Choose an option: ");
 
             String choice = sc.nextLine().trim();
 
             switch (choice) {
+                case "1":
+                    handleLogin();
+                    break;
 
-                // REGISTER ACCOUNT
-                case "1" -> {
-                    System.out.print("Enter username: ");
-                    String username = sc.nextLine().trim();
-
+                case "2":
+                    System.out.print("Enter new username: ");
+                    String user = sc.nextLine();
                     System.out.print("Enter password: ");
-                    String password = sc.nextLine();
+                    String pass = sc.nextLine();
 
-                    System.out.println("\nSelect User Role:");
-                    System.out.println("1. SECURITY_GUARD");
-                    System.out.println("2. ADMIN");
-                    System.out.println("3. RESIDENT");
-                    System.out.println("4. SUPERVISOR");
-                    System.out.print("Choose role: ");
+                    System.out.print("Select Role [1] SECURITY_GUARD | [2] ADMIN | [3] RESIDENT | [4] SUPERVISOR: ");
+                    int roleChoice = Integer.parseInt(sc.nextLine().trim());
+                    String role;
 
-                    String roleChoice = sc.nextLine().trim();
-
-                    String role = switch (roleChoice) {
-                        case "1" -> "SECURITY_GUARD";
-                        case "2" -> "ADMIN";
-                        case "3" -> "RESIDENT";
-                        case "4" -> "SUPERVISOR";
-                        default -> null;
-                    };
-
-                    if (username.isBlank() || password.isBlank()) {
-                        System.out.println(
-                                "Username and password are required."
-                        );
-                        break;
+                    switch (roleChoice) {
+                        case 1:
+                            handleLogin();
+                            role = "SECURITY_GUARD";
+                            break;
+                        case 2:
+                            role = "ADMIN";
+                            break;
+                        case 3:
+                            role = "RESIDENT";
+                            break;
+                        case 4:
+                            role = "SUPERVISOR";
+                            break;
+                        default:
+                            role = null;
                     }
 
-                    if (role == null) {
-                        System.out.println("Invalid role selection.");
-                        break;
+                    if (role != null) {
+                        userDao.registerUser(user, pass, role);
+                        System.out.println("Registration successful!");
+                    } else {
+                        System.out.println("Invalid role selection!");
                     }
+                    break;
 
-                    userDao.registerUser(
-                            username, password, role
-                    );
-                }
-
-                // LOGIN
-                case "2" -> {
-                    System.out.print("Enter username: ");
-                    String username = sc.nextLine().trim();
-
-                    System.out.print("Enter password: ");
-                    String password = sc.nextLine();
-
-                    User user = userDao.login(
-                            username, password
-                    );
-
-                    if (user != null) {
-                        System.out.println(
-                                "\nWelcome, " + user.username() + "!"
-                        );
-                        System.out.println(
-                                "Role: " + user.roles()
-                        );
-
-                        boolean loggedIn = true;
-
-                        while (loggedIn && running) {
-                            System.out.println("\n========== USER MENU ==========");
-                            System.out.println("1. Logout");
-                            System.out.println("0. Exit Application");
-                            System.out.print("Choose: ");
-
-                            String action = sc.nextLine().trim();
-
-                            switch (action) {
-                                case "1" -> {
-                                    System.out.println(
-                                            "Logged out successfully."
-                                    );
-                                    loggedIn = false;
-                                }
-
-                                case "0" -> {
-                                    System.out.println(
-                                            "Thank you for using ECINREV. Goodbye!"
-                                    );
-                                    loggedIn = false;
-                                    running = false;
-                                }
-
-                                default -> System.out.println(
-                                        "Invalid choice. Please try again."
-                                );
-                            }
-                        }
-                    }
-                }
-
-                // EXIT
-                case "0" -> {
-                    System.out.println(
-                            "Thank you for using ECINREV. Goodbye!"
-                    );
+                case "3":
                     running = false;
-                }
+                    System.out.println("Exiting system...");
+                    break;
 
-                default -> System.out.println(
-                        "Invalid choice. Please try again."
-                );
+                default:
+                    System.out.println("Invalid option. Please try again.");
             }
         }
+    }
 
-        sc.close();
+    private static void handleLogin(){
+        System.out.print("Enter username: ");
+        String username = sc.nextLine();
+        System.out.print("Enter Password: ");
+        String password = sc.nextLine();
+
+        User user = userDao.login(username, password);
+
+        if(user != null){
+            System.out.println("\n -> Welcome "+user.username()+" | ROLE: "+user.roles()+"");
+            switch (user.roles()){
+                case "ADMIN" -> new AdminMenu(userDao, sc).display(user);
+                default -> System.out.println("Account roles not found!");
+            }
+        }
     }
 }

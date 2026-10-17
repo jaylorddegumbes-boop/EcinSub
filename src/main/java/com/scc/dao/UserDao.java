@@ -1,13 +1,37 @@
-
 package com.scc.dao;
 
 import com.scc.model.User;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
+import java.sql.*;
 
 public class UserDao {
+
+    public UserDao(){
+
+        try(Connection conn = Databaseconnection.getConnection();
+            Statement stmt = conn.createStatement()){
+            defaultAdminGenerator(conn);
+        }catch(SQLException e){
+            System.err.println("Error seeding default admin: " + e.getMessage());
+        }
+    }
+
+
+
+    public void defaultAdminGenerator(Connection conn) {
+        String checkSql = "SELECT COUNT(*) FROM users WHERE roles = 'ADMIN'";
+        String insertSql = "INSERT INTO users(username, password, roles, status) VALUES('admin', 'admin123', 'ADMIN', 'APPROVED')";
+
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(checkSql)) {
+            if (rs.next() && rs.getInt(1) == 0) {
+                stmt.executeUpdate(insertSql);
+                System.out.println("-> Default Admin created ");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error seeding default admin: " + e.getMessage());
+        }
+    }
 
     // REGISTER ACCOUNT
     public boolean registerUser(
@@ -48,36 +72,23 @@ public class UserDao {
     }
 
     // LOGIN
-    public User login(String username, String password) {
-        String sql = """
-            SELECT id, username, password, roles, status
-            FROM users
-            WHERE username = ? AND password = ?
-            """;
+    public User login(String username, String password){
+        String sql = "SELECT id, username, password, roles, status FROM users WHERE username = ? AND password = ?";
 
-        try (
+        try(
                 Connection conn = Databaseconnection.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)
-        ) {
-            pstmt.setString(1, username.trim());
+        ){
+            pstmt.setString(1, username);
             pstmt.setString(2, password);
 
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
+            try(ResultSet rs = pstmt.executeQuery()){
+                if(rs.next()){
                     String status = rs.getString("status");
-
-                    if (!"ACTIVE".equalsIgnoreCase(status)) {
-                        System.out.println(
-                                "Login denied. Account status: " + status
-                        );
-                        System.out.println(
-                                "Please contact the administrator for approval."
-                        );
+                    if("PENDING".equalsIgnoreCase(status)){
+                        System.out.println(" -> Account is pending, waiting for Approval");
                         return null;
                     }
-
-                    System.out.println("Login successful!");
-
                     return new User(
                             rs.getInt("id"),
                             rs.getString("username"),
@@ -85,17 +96,15 @@ public class UserDao {
                             rs.getString("roles"),
                             status
                     );
+                }else{
+                    System.out.println(" -> Invalid username or password");
                 }
-            }
 
-        } catch (SQLException e) {
-            System.out.println(
-                    "Login failed: " + e.getMessage()
-            );
-            return null;
+            }
+        }catch(SQLException e) {
+            System.err.println("Error during login: " + e.getMessage());
         }
 
-        System.out.println("Invalid username or password.");
         return null;
     }
 }

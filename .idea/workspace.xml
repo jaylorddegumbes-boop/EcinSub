@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="09b1d28d-b100-4529-a0da-94bc66011883" name="Changes" comment="" />
+    <list default="true" id="09b1d28d-b100-4529-a0da-94bc66011883" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../EcinSub/src/main/java/com/scc/ui/AdminMenu.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../EcinSub/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../EcinSub/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../EcinSub/EcinrevSub.db" beforeDir="false" afterPath="$PROJECT_DIR$/../EcinSub/EcinrevSub.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../EcinSub/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../EcinSub/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../EcinSub/src/main/java/com/scc/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/../EcinSub/src/main/java/com/scc/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../EcinSub/src/main/java/com/scc/dao/UserDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/../EcinSub/src/main/java/com/scc/dao/UserDao.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -29,18 +36,40 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Main.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "master",
-    "kotlin-language-version-configured": "true",
-    "onboarding.tips.debug.path": "C:/Users/Admin/Music/EcinSub/src/main/java/com/scc/Main.java"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/Admin/Music/EcinSub/src/main/java/com/scc/Main.java&quot;
   }
-}]]></component>
+}</component>
+  <component name="RunManager">
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.scc.Main" />
+      <module name="EcinSub." />
+      <option name="VM_PARAMETERS" value="--enable-native-access=ALL-UNNAMED" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.scc.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Main" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
