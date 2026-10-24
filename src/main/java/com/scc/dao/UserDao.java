@@ -9,12 +9,9 @@ import java.util.List;
 public class UserDao {
 
     public UserDao() {
-        try (Connection conn = Databaseconnection.getConnection();
-             Statement stmt = conn.createStatement()) {
-
+        try (Connection conn = Databaseconnection.getConnection()) {
             // Create the table first before checking or seeding data
             createTable(conn);
-
             defaultAdminGenerator(conn);
         } catch (SQLException e) {
             System.err.println("Error initializing UserDao: " + e.getMessage());
@@ -54,28 +51,21 @@ public class UserDao {
     }
 
     // REGISTER ACCOUNT
-    public boolean registerUser(
-            String username,
-            String password,
-            String role
-    ) {
+    public boolean registerUser(String username, String password, String role) {
         String sql = """
             INSERT INTO users (username, password, roles, status)
             VALUES (?, ?, ?, 'PENDING')
             """;
 
-        try (
-                Connection conn = Databaseconnection.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
-        ) {
+        try (Connection conn = Databaseconnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setString(1, username.trim());
             pstmt.setString(2, password);
             pstmt.setString(3, role.toUpperCase());
 
             pstmt.executeUpdate();
-
             System.out.println("Your account is PENDING approval.");
-
             return true;
 
         } catch (SQLException e) {
@@ -88,10 +78,9 @@ public class UserDao {
     public User login(String username, String password) {
         String sql = "SELECT id, username, password, roles, status FROM users WHERE username = ? AND password = ?";
 
-        try (
-                Connection conn = Databaseconnection.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
-        ) {
+        try (Connection conn = Databaseconnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setString(1, username);
             pstmt.setString(2, password);
 
@@ -142,5 +131,53 @@ public class UserDao {
         }
 
         return usersList;
+    }
+
+    public List<User> getPendingUser() {
+        List<User> pendingList = new ArrayList<>();
+        String sql = "SELECT id, username, password, roles, status FROM users WHERE status = 'PENDING'";
+
+        try (Connection conn = Databaseconnection.getConnection();
+             Statement stat = conn.createStatement();
+             ResultSet rs = stat.executeQuery(sql)) {
+
+            while (rs.next()) {
+                pendingList.add(new User(
+                        rs.getInt("id"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("roles"),
+                        rs.getString("status")
+                ));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching pending users: " + e.getMessage());
+        }
+
+        return pendingList;
+    }
+
+    public boolean approveUser(int userId) {
+        String sql = "UPDATE users SET status = 'APPROVED' WHERE id = ?";
+
+        try (Connection conn = Databaseconnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, userId);
+            int rowsUpdated = pstmt.executeUpdate();
+
+            if (rowsUpdated > 0) {
+                System.out.println(" -> User ID: " + userId + " approved successfully!");
+                return true;
+            } else {
+                System.out.println(" -> ID not found.");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error approving users: " + e.getMessage());
+        }
+
+        return false;
     }
 }

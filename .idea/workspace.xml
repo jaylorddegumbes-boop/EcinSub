@@ -7,8 +7,6 @@
     <list default="true" id="09b1d28d-b100-4529-a0da-94bc66011883" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/../EcinSub/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../EcinSub/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../EcinSub/EcinrevSub.db" beforeDir="false" afterPath="$PROJECT_DIR$/../EcinSub/EcinrevSub.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EcinSub/src/main/java/com/scc/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/../EcinSub/src/main/java/com/scc/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../EcinSub/src/main/java/com/scc/dao/Databaseconnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/../EcinSub/src/main/java/com/scc/dao/Databaseconnection.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../EcinSub/src/main/java/com/scc/dao/UserDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/../EcinSub/src/main/java/com/scc/dao/UserDao.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../EcinSub/src/main/java/com/scc/ui/AdminMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/../EcinSub/src/main/java/com/scc/ui/AdminMenu.java" afterDir="false" />
     </list>

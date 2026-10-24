@@ -35,6 +35,8 @@ public class AdminMenu {
 
             switch (choice){
                 case "1" -> viewAllUser();
+                case "2" -> viewPendingUsers();
+                case "3" -> approveUser();
                 case "7" -> {
                     loggedIn = false;
                     System.out.println("Logging out...");
@@ -62,5 +64,44 @@ public class AdminMenu {
 
     private void viewAllUser(){
         displayUserTable(userDao.getAllUser(), "ALL REGISTERED USER");
+    }
+
+    private void viewPendingUsers(){
+        displayUserTable(userDao.getPendingUser(), "PENDING APPROVALS");
+    }
+
+    private void approveUser(){
+        List<User> pendingUsers = userDao.getPendingUser();
+        displayUserTable(pendingUsers, "PENDING APPROVALS");
+
+        if(pendingUsers.isEmpty()){
+            return;
+        }
+
+        int userId = readIntInput("Enter User ID to approve (or 0 to cancel): ");
+        if (userId == 0){
+            System.out.println(" -> Operation Cancelled by the user.");
+            return; // Stops execution so it doesn't search for ID 0
+        }
+
+        boolean exists = pendingUsers.stream().anyMatch(u -> u.id() == userId);
+        if(!exists){
+            System.out.println(" -> [ERROR] User ID not found.");
+            return;
+        }
+
+        userDao.approveUser(userId);
+    }
+
+    // Helper method to safely read integer inputs from the console
+    private int readIntInput(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            try {
+                return Integer.parseInt(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println(" -> [ERROR] Invalid input. Please enter a valid number.");
+            }
+        }
     }
 }
