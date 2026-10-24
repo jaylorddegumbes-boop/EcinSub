@@ -3,20 +3,40 @@ package com.scc.dao;
 import com.scc.model.User;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDao {
 
-    public UserDao(){
+    public UserDao() {
+        try (Connection conn = Databaseconnection.getConnection();
+             Statement stmt = conn.createStatement()) {
 
-        try(Connection conn = Databaseconnection.getConnection();
-            Statement stmt = conn.createStatement()){
+            // Create the table first before checking or seeding data
+            createTable(conn);
+
             defaultAdminGenerator(conn);
-        }catch(SQLException e){
-            System.err.println("Error seeding default admin: " + e.getMessage());
+        } catch (SQLException e) {
+            System.err.println("Error initializing UserDao: " + e.getMessage());
         }
     }
 
-
+    public void createTable(Connection conn) {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL,
+                roles TEXT NOT NULL,
+                status TEXT NOT NULL
+            );
+        """;
+        try (Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            System.err.println("Error creating table: " + e.getMessage());
+        }
+    }
 
     public void defaultAdminGenerator(Connection conn) {
         String checkSql = "SELECT COUNT(*) FROM users WHERE roles = 'ADMIN'";
@@ -54,38 +74,31 @@ public class UserDao {
 
             pstmt.executeUpdate();
 
-            System.out.println(
-                    "Registration successful!"
-            );
-            System.out.println(
-                    "Your account is PENDING approval."
-            );
+            System.out.println("Your account is PENDING approval.");
 
             return true;
 
         } catch (SQLException e) {
-            System.out.println(
-                    "Registration failed: " + e.getMessage()
-            );
+            System.out.println("Registration failed: " + e.getMessage());
             return false;
         }
     }
 
     // LOGIN
-    public User login(String username, String password){
+    public User login(String username, String password) {
         String sql = "SELECT id, username, password, roles, status FROM users WHERE username = ? AND password = ?";
 
-        try(
+        try (
                 Connection conn = Databaseconnection.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)
-        ){
+        ) {
             pstmt.setString(1, username);
             pstmt.setString(2, password);
 
-            try(ResultSet rs = pstmt.executeQuery()){
-                if(rs.next()){
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
                     String status = rs.getString("status");
-                    if("PENDING".equalsIgnoreCase(status)){
+                    if ("PENDING".equalsIgnoreCase(status)) {
                         System.out.println(" -> Account is pending, waiting for Approval");
                         return null;
                     }
@@ -96,15 +109,38 @@ public class UserDao {
                             rs.getString("roles"),
                             status
                     );
-                }else{
+                } else {
                     System.out.println(" -> Invalid username or password");
                 }
-
             }
-        }catch(SQLException e) {
+        } catch (SQLException e) {
             System.err.println("Error during login: " + e.getMessage());
         }
 
         return null;
+    }
+
+    public List<User> getAllUser() {
+        List<User> usersList = new ArrayList<>();
+        String sql = "SELECT id, username, password, roles, status FROM users";
+
+        try (Connection conn = Databaseconnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                usersList.add(new User(
+                        rs.getInt("id"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("roles"),
+                        rs.getString("status")
+                ));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching all users: " + e.getMessage());
+        }
+
+        return usersList;
     }
 }
