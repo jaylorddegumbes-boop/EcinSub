@@ -37,6 +37,7 @@ public class AdminMenu {
                 case "1" -> viewAllUser();
                 case "2" -> viewPendingUsers();
                 case "3" -> approveUser();
+                case "5" -> updateUser(admin);
                 case "7" -> {
                     loggedIn = false;
                     System.out.println("Logging out...");
@@ -91,6 +92,94 @@ public class AdminMenu {
         }
 
         userDao.approveUser(userId);
+    }
+
+    private void updateUser(User currentAdmin) {
+        List<User> users = userDao.getAllUser();
+        displayUserTable(users, "SELECT USER TO UPDATE");
+
+        if (users.isEmpty()) {
+            return;
+        }
+
+        int userId = readIntInput("Enter selected ID to update (or 0 to cancel): ");
+
+        if (userId == 0) {
+            System.out.println(" -> Operation Cancelled.");
+            return;
+        }
+
+        if (userId == currentAdmin.id()) {
+            System.out.println(" -> [WARNING] Modifying current active Admin is restricted");
+        }
+
+        String newRole = readValidRole();
+        if (newRole == null) {
+            System.out.println(" -> Operation Cancelled.");
+            return;
+        }
+
+        String newStatus = readValidStatus();
+
+        if (newStatus == null) {
+            System.out.println(" -> Operation Cancelled.");
+            return;
+        }
+
+        userDao.updateUserAndStatus(userId, newRole, newStatus);
+    }
+
+    private String readValidRole() {
+        while (true) {
+            System.out.print("Select Role [1] SECURITY_GUARD | [2] ADMIN | [3] RESIDENT | [4] SUPERVISOR (or 0 to cancel): ");
+            String input = scanner.nextLine().trim().toUpperCase();
+
+            if (input.equals("0") || input.equals("CANCEL")) {
+                return null;
+            }
+
+            switch (input) {
+                case "1":
+                case "SECURITY_GUARD":
+                    return "SECURITY_GUARD";
+                case "2":
+                case "ADMIN":
+                    return "ADMIN";
+                case "3":
+                case "RESIDENT":
+                    return "RESIDENT";
+                case "4":
+                case "SUPERVISOR":
+                    return "SUPERVISOR";
+                default:
+                    System.out.println(" -> [ERROR] Invalid Role. Please select 1-4 or enter a valid role name.");
+            }
+        }
+    }
+
+    private String readValidStatus() {
+        while (true) {
+            System.out.print("Select Status [1] APPROVED | [2] PENDING | [3] REJECTED (or 0 to cancel): ");
+            String input = scanner.nextLine().trim().toUpperCase();
+
+            if (input.equals("0") || input.equals("CANCEL")) {
+                return null;
+            }
+
+            switch (input) {
+                case "1":
+                case "APPROVED":
+                    return "APPROVED";
+                case "2":
+                case "PENDING":
+                    return "PENDING";
+                case "3":
+                case "REJECTED":
+                    return "REJECTED";
+                default:
+                    System.out.println(" -> [ERROR] Invalid Status. Please select 1-3 or enter a valid status name.");
+            }
+        }
     }
 
     // Helper method to safely read integer inputs from the console

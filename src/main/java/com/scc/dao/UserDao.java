@@ -5,6 +5,7 @@ import com.scc.model.User;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class UserDao {
 
@@ -176,6 +177,32 @@ public class UserDao {
 
         } catch (SQLException e) {
             System.err.println("Error approving users: " + e.getMessage());
+        }
+
+        return false;
+    }
+    public boolean updateUserAndStatus(int userId, String newRoles, String newStatus) {
+
+        String sql = "UPDATE users SET roles = ?, status = ? WHERE id = ?";
+
+        try (
+                Connection conn = Databaseconnection.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
+        ) {
+            pstmt.setString(1, newRoles.toUpperCase());
+            pstmt.setString(2, newStatus.toUpperCase());
+            pstmt.setInt(3, userId);
+
+            int rowsUpdated = pstmt.executeUpdate();
+            if (rowsUpdated > 0) {
+                System.out.println(" -> User ID: " + userId + " updated successfully!");
+                return true;
+            } else {
+                System.out.println(" -> User ID not found.");
+            }
+            return false;
+        } catch (SQLException e) {
+            System.err.println("Error updating user: " + e.getMessage());
         }
 
         return false;
