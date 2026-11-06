@@ -1,6 +1,8 @@
 package com.scc.ui;
 
+import com.scc.dao.ActivityLogDao;
 import com.scc.dao.UserDao;
+import com.scc.model.ActivityLog;
 import com.scc.model.User;
 
 import java.util.List;
@@ -28,17 +30,19 @@ public class AdminMenu {
             System.out.println("4. Add New User");
             System.out.println("5. Update User Role / Status");
             System.out.println("6. Delete User Account");
-            System.out.println("7. Logout");
-            System.out.print("Choose an option (1-7): ");
+            System.out.println("7. View System Audit Logs");
+            System.out.println("8. Logout");
+            System.out.print("Choose an option (1-8): ");
 
             String choice = scanner.nextLine().trim();
 
             switch (choice){
                 case "1" -> viewAllUser();
                 case "2" -> viewPendingUsers();
-                case "3" -> approveUser();
+                case "3" -> approveUser(admin);
                 case "5" -> updateUser(admin);
-                case "7" -> {
+                case "7" -> viewSystemAuditLogs();
+                case "8" -> {
                     loggedIn = false;
                     System.out.println("Logging out...");
                 }
@@ -71,7 +75,7 @@ public class AdminMenu {
         displayUserTable(userDao.getPendingUser(), "PENDING APPROVALS");
     }
 
-    private void approveUser(){
+    private void approveUser(User currentAdmin){
         List<User> pendingUsers = userDao.getPendingUser();
         displayUserTable(pendingUsers, "PENDING APPROVALS");
 
@@ -82,7 +86,7 @@ public class AdminMenu {
         int userId = readIntInput("Enter User ID to approve (or 0 to cancel): ");
         if (userId == 0){
             System.out.println(" -> Operation Cancelled by the user.");
-            return; // Stops execution so it doesn't search for ID 0
+            return;
         }
 
         boolean exists = pendingUsers.stream().anyMatch(u -> u.id() == userId);
@@ -91,7 +95,7 @@ public class AdminMenu {
             return;
         }
 
-        userDao.approveUser(userId);
+        userDao.approveUser(currentAdmin.id(), userId);
     }
 
     private void updateUser(User currentAdmin) {
@@ -126,7 +130,52 @@ public class AdminMenu {
             return;
         }
 
-        userDao.updateUserAndStatus(userId, newRole, newStatus);
+        userDao.updateUserAndStatus(currentAdmin.id(), userId, newRole, newStatus);
+    }
+
+    private void viewSystemAuditLogs() {
+        ActivityLogDao logDao = new ActivityLogDao();
+        boolean viewing = true;
+        while (viewing) {
+            System.out.println("\n========================================");
+            System.out.println("         SYSTEM AUDIT LOGS MENU         ");
+            System.out.println("========================================");
+            System.out.println("1. View All System Logs");
+            System.out.println("2. Filter Logs by User ID");
+            System.out.println("3. Back to Admin Dashboard");
+            System.out.print("Choose an option (1-3): ");
+
+            String choice = scanner.nextLine().trim();
+            switch (choice) {
+                case "1" -> {
+                    List<ActivityLog> logs = logDao.getAllLogs();
+                    displayLogTable(logs, "ALL SYSTEM AUDIT LOGS");
+                }
+                case "2" -> {
+                    int targetUserId = readIntInput("Enter User ID to filter: ");
+                    List<ActivityLog> logs = logDao.getLogsByUserId(targetUserId);
+                    displayLogTable(logs, "LOGS FOR USER ID: " + targetUserId);
+                }
+                case "3" -> viewing = false;
+                default -> System.out.println(" -> [ERROR] Invalid Option.");
+            }
+        }
+    }
+
+    private void displayLogTable(List<ActivityLog> logs, String title) {
+        System.out.println("\n=================================" + title + "=================================");
+        if (logs.isEmpty()) {
+            System.out.println("-> No Audit Logs Found.");
+            return;
+        }
+        System.out.println("+-------+----------+--------------------+-------------------------------------+----------------------+");
+        System.out.printf("| %-5s | %-8s | %-18s | %-35s | %-20s |\n", "ID", "User ID", "Action Type", "Description", "Timestamp");
+        System.out.println("+-------+----------+--------------------+-------------------------------------+----------------------+");
+        for (ActivityLog log : logs) {
+            System.out.printf("| %-5d | %-8d | %-18s | %-35s | %-20s |\n",
+                    log.id(), log.userId(), log.actionType(), log.description(), log.timestamp());
+        }
+        System.out.println("+-------+----------+--------------------+-------------------------------------+----------------------+");
     }
 
     private String readValidRole() {
@@ -139,20 +188,11 @@ public class AdminMenu {
             }
 
             switch (input) {
-                case "1":
-                case "SECURITY_GUARD":
-                    return "SECURITY_GUARD";
-                case "2":
-                case "ADMIN":
-                    return "ADMIN";
-                case "3":
-                case "RESIDENT":
-                    return "RESIDENT";
-                case "4":
-                case "SUPERVISOR":
-                    return "SUPERVISOR";
-                default:
-                    System.out.println(" -> [ERROR] Invalid Role. Please select 1-4 or enter a valid role name.");
+                case "1", "SECURITY_GUARD" -> { return "SECURITY_GUARD"; }
+                case "2", "ADMIN" -> { return "ADMIN"; }
+                case "3", "RESIDENT" -> { return "RESIDENT"; }
+                case "4", "SUPERVISOR" -> { return "SUPERVISOR"; }
+                default -> System.out.println(" -> [ERROR] Invalid Role. Please select 1-4 or enter a valid role name.");
             }
         }
     }
@@ -167,22 +207,14 @@ public class AdminMenu {
             }
 
             switch (input) {
-                case "1":
-                case "APPROVED":
-                    return "APPROVED";
-                case "2":
-                case "PENDING":
-                    return "PENDING";
-                case "3":
-                case "REJECTED":
-                    return "REJECTED";
-                default:
-                    System.out.println(" -> [ERROR] Invalid Status. Please select 1-3 or enter a valid status name.");
+                case "1", "APPROVED" -> { return "APPROVED"; }
+                case "2", "PENDING" -> { return "PENDING"; }
+                case "3", "REJECTED" -> { return "REJECTED"; }
+                default -> System.out.println(" -> [ERROR] Invalid Status. Please select 1-3 or enter a valid status name.");
             }
         }
     }
 
-    // Helper method to safely read integer inputs from the console
     private int readIntInput(String prompt) {
         while (true) {
             System.out.print(prompt);

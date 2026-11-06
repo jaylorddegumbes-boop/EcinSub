@@ -7,6 +7,7 @@
     <list default="true" id="09b1d28d-b100-4529-a0da-94bc66011883" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/../EcinSub/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../EcinSub/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../EcinSub/EcinrevSub.db" beforeDir="false" afterPath="$PROJECT_DIR$/../EcinSub/EcinrevSub.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../EcinSub/src/main/java/com/scc/dao/DatabaseInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/../EcinSub/src/main/java/com/scc/dao/DatabaseInitializer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../EcinSub/src/main/java/com/scc/dao/UserDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/../EcinSub/src/main/java/com/scc/dao/UserDao.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../EcinSub/src/main/java/com/scc/ui/AdminMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/../EcinSub/src/main/java/com/scc/ui/AdminMenu.java" afterDir="false" />
     </list>
@@ -89,5 +90,20 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/../EcinSub/src/main/java/com/scc/model/ActivityLog.java</url>
+          <line>10</line>
+          <properties class="com.scc.model.ActivityLog" method="toString">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

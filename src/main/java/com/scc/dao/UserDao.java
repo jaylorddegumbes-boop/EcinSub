@@ -5,7 +5,6 @@ import com.scc.model.User;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class UserDao {
 
@@ -159,7 +158,7 @@ public class UserDao {
         return pendingList;
     }
 
-    public boolean approveUser(int userId) {
+    public boolean approveUser(int adminId, int userId) {
         String sql = "UPDATE users SET status = 'APPROVED' WHERE id = ?";
 
         try (Connection conn = Databaseconnection.getConnection();
@@ -170,6 +169,8 @@ public class UserDao {
 
             if (rowsUpdated > 0) {
                 System.out.println(" -> User ID: " + userId + " approved successfully!");
+                // Automatically log action
+                new ActivityLogDao().logAction(adminId, "USER_APPROVED", "Admin ID " + adminId + " approved account for User ID " + userId);
                 return true;
             } else {
                 System.out.println(" -> ID not found.");
@@ -181,14 +182,13 @@ public class UserDao {
 
         return false;
     }
-    public boolean updateUserAndStatus(int userId, String newRoles, String newStatus) {
 
+    public boolean updateUserAndStatus(int adminId, int userId, String newRoles, String newStatus) {
         String sql = "UPDATE users SET roles = ?, status = ? WHERE id = ?";
 
-        try (
-                Connection conn = Databaseconnection.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
-        ) {
+        try (Connection conn = Databaseconnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setString(1, newRoles.toUpperCase());
             pstmt.setString(2, newStatus.toUpperCase());
             pstmt.setInt(3, userId);
@@ -196,11 +196,12 @@ public class UserDao {
             int rowsUpdated = pstmt.executeUpdate();
             if (rowsUpdated > 0) {
                 System.out.println(" -> User ID: " + userId + " updated successfully!");
+                // Automatically log action
+                new ActivityLogDao().logAction(adminId, "USER_UPDATED", "Admin ID " + adminId + " changed role of User " + userId + " to " + newRoles.toUpperCase());
                 return true;
             } else {
                 System.out.println(" -> User ID not found.");
             }
-            return false;
         } catch (SQLException e) {
             System.err.println("Error updating user: " + e.getMessage());
         }
